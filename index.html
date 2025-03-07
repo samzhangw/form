@@ -1,0 +1,132 @@
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會考落點分析邀請碼系統</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="navigation-menu">
+                <div class="nav-logo">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <span class="nav-title">會考系統</span>
+                </div>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider">
+                            <span class="slider-icon sun-icon">☀️</span>
+                            <span class="slider-icon moon-icon">🌙</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">首頁</a>
+                    <a href="#" class="nav-link">關於我們</a>
+                    <a href="#" class="nav-link">服務項目</a>
+                    <a href="#" class="nav-link">聯絡資訊</a>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <h1>會考落點分析邀請碼系統</h1>
+            <p>為您提供精準的會考成績評估及學校落點分析，幫助您做出最佳的升學選擇</p>
+            <svg class="header-decoration" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#fff"></path>
+            </svg>
+        </header>
+
+        <main>
+            <div class="instructions-button">
+                <button id="showInstructions">查看使用說明</button>
+            </div>
+
+            <div class="region-selector">
+                <label for="region">請選擇您所在的區域:</label>
+                <select id="region" onchange="updateFormInfo()">
+                    <option value="" selected disabled>請選擇區域</option>
+                    <option value="central">中投區</option>
+                    <option value="changhua">彰化區</option>
+                    <option value="kaohsiung">高雄區</option>
+                    <option value="taoyuan">桃聯區</option>
+                    <option value="national">全國</option>
+                </select>
+            </div>
+
+            <div id="loadingIndicator" class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <p>正在從後端獲取資料...</p>
+            </div>
+
+            <div id="formInfo" class="form-info hidden">
+                <div class="info-card">
+                    <h2 id="regionName">區域名稱</h2>
+                    <div class="info-row">
+                        <span class="label">表單連結:</span>
+                        <a id="formLink" href="#" target="_blank" class="value">表單連結</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p> <span id="currentYear"></span> 表單整合系統 | 如有問題請聯繫系統管理員</p>
+        </footer>
+    </div>
+
+    <!-- Modal for instructions -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="instructions-container">
+                <h2 class="instructions-title">使用說明</h2>
+                <div class="instructions-content">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <p>從下方的下拉選單中選擇您所在的區域</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <p>系統將顯示對應區域的表單連結</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <p>點擊表單連結，前往填寫會考落點分析表單</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        <p>在表單中輸入您的基本資料及會考成績</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        <p>提交表單後，系統將分析您的會考成績與落點</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">6</span>
+                        <p>您將收到包含分析結果的回覆，可用於選校參考</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">7</span>
+                        <p>如有問題或需要更多協助，請聯繫您區域的輔導老師</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
