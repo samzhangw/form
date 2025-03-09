@@ -733,12 +733,32 @@
         }
         
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #4db6ac;
+            width: 60px;
+            height: 60px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
+            border: 5px solid rgba(77, 182, 172, 0.2);
+        }
+        
+        .spinner::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: #4db6ac;
+            animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
         }
         
         @keyframes spin {
@@ -746,9 +766,27 @@
             100% { transform: rotate(360deg); }
         }
         
-        body.dark-mode .spinner {
-            border-color: #80cbc4;
-            border-top-color: transparent;
+        @keyframes pulse {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.15); }
+        }
+        
+        .loading-text {
+            position: absolute;
+            color: #fff;
+            font-size: 14px;
+            margin-top: 90px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .spinner::before {
+            border-color: rgba(128, 203, 196, 0.2);
+        }
+        
+        body.dark-mode .spinner::after {
+            border-top-color: #80cbc4;
         }
         
         /* 更新版權宣告樣式 */
@@ -812,6 +850,7 @@
     <!-- 載入動畫遮罩 -->
     <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="spinner"></div>
+        <div class="loading-text">載入中...</div>
     </div>
     
     <!-- 通知元素 -->
