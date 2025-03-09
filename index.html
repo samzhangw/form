@@ -3,9 +3,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>會考落點分析邀請碼系統</title>
+    <meta name="description" content="國中會考落點分析邀請碼系統 - 免費幫助考生選填志願，找到最適合的高中職學校。透過歷年數據分析，提供精準的落點預測與志願選填建議。">
+    <meta name="keywords" content="國中會考,會考落點分析,高中志願選填,免費落點分析,會考分發,志願選填系統,高中職落點預測">
+    <meta name="author" content="會考落點分析系統">
+    <meta property="og:title" content="會考落點分析邀請碼系統">
+    <meta property="og:description" content="免費幫助國中會考考生選填志願，透過歷年數據分析，提供精準的落點預測與志願選填建議。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://capdataanalysis.com/">
+    <meta property="og:image" content="https://capdataanalysis.com/chart-icon.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="會考落點分析邀請碼系統">
+    <meta name="twitter:description" content="免費幫助國中會考考生選填志願，提供精準的落點預測與建議。">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta name="theme-color" content="#006064">
+    <link rel="canonical" href="https://capdataanalysis.com/">
+    <meta name="robots" content="index, follow">
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
@@ -1091,59 +1104,6 @@
             document.getElementById('menuOverlay').classList.remove('active');
         });
 
-        // 頁面載入時從後端獲取地區資料
-        window.onload = function() {
-            // 顯示載入動畫
-            const loadingOverlay = document.getElementById("loadingOverlay");
-            loadingOverlay.classList.remove("hidden");
-            
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    regionsData = data.links;
-                    const regionSelect = document.getElementById("regionSelect");
-                    // 先清空可能的預設選項
-                    regionSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
-                    
-                    // 按照字母排序區域
-                    const sortedRegions = data.regions.sort();
-                    
-                    sortedRegions.forEach(region => {
-                        const option = document.createElement("option");
-                        option.value = region;
-                        option.text = region;
-                        regionSelect.appendChild(option);
-                    });
-                    // 隱藏載入動畫
-                    loadingOverlay.classList.add("hidden");
-                    
-                    // 添加選擇區域事件
-                    document.getElementById("regionSelect").addEventListener('change', function() {
-                        // 更新URL而不重新載入頁面
-                        const region = this.value;
-                        if (region) {
-                            const url = new URL(window.location);
-                            url.searchParams.set('region', region);
-                            window.history.pushState({}, '', url);
-                        }
-                    });
-                    
-                    // 若URL中有區域參數，andler自動選擇該區域
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const regionParam = urlParams.get('region');
-                    if (regionParam && data.regions.includes(regionParam)) {
-                        regionSelect.value = regionParam;
-                        getLink();
-                    }
-                })
-                .catch(error => {
-                    console.error("載入區域資料失敗:", error);
-                    // 隱藏載入動畫
-                    loadingOverlay.classList.add("hidden");
-                    alert("載入資料失敗，請稍後再試！");
-                });
-        };
-
         // 獲取連結並顯示 
         function getLink() {
             // 顯示載入動畫
@@ -1155,6 +1115,9 @@
             
             if (region && regionsData[region]) {
                 currentLink = regionsData[region];
+                
+                // 記錄使用者資訊到後端
+                logUserActivity(region);
                 
                 // 移除之前的複製按鈕（如果有）
                 const oldButton = result.querySelector('.copy-button');
@@ -1198,6 +1161,44 @@
             setTimeout(() => {
                 loadingOverlay.classList.add("hidden");
             }, 500);
+        }
+        
+        // 記錄使用者資訊到後端
+        function logUserActivity(selectedRegion) {
+            // 收集使用者資訊
+            const userInfo = {
+                region: selectedRegion,
+                timestamp: new Date().toISOString(),
+                link: currentLink,
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer || 'direct',
+                pathname: window.location.pathname,
+                searchParams: window.location.search
+            };
+            
+            // 發送到後端
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'logActivity',
+                    data: userInfo
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Activity logged successfully', data);
+            })
+            .catch(error => {
+                console.error('Error logging activity:', error);
+            });
         }
         
         // 動態生成QR碼功能
@@ -1275,6 +1276,59 @@
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
         });
+        
+        // 頁面載入時從後端獲取地區資料
+        window.onload = function() {
+            // 顯示載入動畫
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            loadingOverlay.classList.remove("hidden");
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    regionsData = data.links;
+                    const regionSelect = document.getElementById("regionSelect");
+                    // 先清空可能的預設選項
+                    regionSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
+                    
+                    // 按照字母排序區域
+                    const sortedRegions = data.regions.sort();
+                    
+                    sortedRegions.forEach(region => {
+                        const option = document.createElement("option");
+                        option.value = region;
+                        option.text = region;
+                        regionSelect.appendChild(option);
+                    });
+                    // 隱藏載入動畫
+                    loadingOverlay.classList.add("hidden");
+                    
+                    // 添加選擇區域事件
+                    document.getElementById("regionSelect").addEventListener('change', function() {
+                        // 更新URL而不重新載入頁面
+                        const region = this.value;
+                        if (region) {
+                            const url = new URL(window.location);
+                            url.searchParams.set('region', region);
+                            window.history.pushState({}, '', url);
+                        }
+                    });
+                    
+                    // 若URL中有區域參數，andler自動選擇該區域
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const regionParam = urlParams.get('region');
+                    if (regionParam && data.regions.includes(regionParam)) {
+                        regionSelect.value = regionParam;
+                        getLink();
+                    }
+                })
+                .catch(error => {
+                    console.error("載入區域資料失敗:", error);
+                    // 隱藏載入動畫
+                    loadingOverlay.classList.add("hidden");
+                    alert("載入資料失敗，請稍後再試！");
+                });
+        };
     </script>
 </body>
 </html>
