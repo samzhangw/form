@@ -1,130 +1,249 @@
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>會考落點分析邀請碼系統</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            width: 480px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #01579b;
+            font-size: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h2 i {
+            margin-right: 12px;
+            color: #0288d1;
+            font-size: 32px;
+        }
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        select {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #0277bd;
+            background: #f5f9ff;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        select:focus {
+            outline: none;
+            border-color: #0288d1;
+            box-shadow: 0 0 8px rgba(2, 136, 209, 0.3);
+        }
+        button {
+            background: linear-gradient(90deg, #4fc3f7, #0288d1);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(2, 136, 209, 0.3);
+        }
+        button i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #0288d1, #01579b);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(2, 136, 209, 0.5);
+        }
+        #result {
+            margin-top: 20px;
+            color: #01579b;
+            font-size: 15px;
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #b3e5fc;
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px); }
+        }
+        #result a {
+            color: #0277bd;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        #result a:hover {
+            color: #01579b;
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #888;
+            opacity: 0.8;
+        }
+        /* 載入動畫樣式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .spinner {
+            border: 6px solid #e0f7fa;
+            border-top: 6px solid #0288d1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+        /* 背景裝飾 */
+        .bg-decor {
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(2, 136, 209, 0.1);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        .bg-decor-bottom {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 120px;
+            height: 120px;
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 50%;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
+    <!-- 載入動畫遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
     <div class="container">
-        <header>
-            <div class="navigation-menu">
-                <div class="nav-logo">
-                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
-                    <span class="nav-title">會考系統</span>
-                </div>
-                <div class="theme-switch-wrapper">
-                    <label class="theme-switch" for="checkbox">
-                        <input type="checkbox" id="checkbox" />
-                        <div class="slider">
-                            <span class="slider-icon sun-icon">☀️</span>
-                            <span class="slider-icon moon-icon">🌙</span>
-                        </div>
-                    </label>
-                </div>
-                <div class="nav-links">
-                    <a href="https://rcpett.vercel.app/" class="nav-link active">首頁</a>
-                    <a href="https://caprcpet.vercel.app/" class="nav-link">落點分析</a>
-                </div>
-                <div class="menu-toggle" id="menuToggle">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
-            </div>
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <h1>會考落點分析邀請碼系統</h1>
-            <p>為您提供精準的會考成績評估及學校落點分析，幫助您做出最佳的升學選擇</p>
-            <svg class="header-decoration" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#fff"></path>
-            </svg>
-        </header>
-
-        <main>
-            <div class="instructions-button">
-                <button id="showInstructions">查看使用說明</button>
-            </div>
-
-            <div class="region-selector">
-                <label for="region">請選擇您所在的區域:</label>
-                <select id="region" onchange="updateFormInfo()">
-                    <option value="" selected disabled>請選擇區域</option>
-                    <option value="central">中投區</option>
-                    <option value="changhua">彰化區</option>
-                    <option value="kaohsiung">高雄區</option>
-                    <option value="taoyuan">桃聯區</option>
-                    <option value="national">全國</option>
-                </select>
-            </div>
-
-            <div id="loadingIndicator" class="loading-indicator">
-                <div class="loading-spinner"></div>
-                <p>正在從後端獲取資料...</p>
-            </div>
-
-            <div id="formInfo" class="form-info hidden">
-                <div class="info-card">
-                    <h2 id="regionName">區域名稱</h2>
-                    <div class="info-row">
-                        <span class="label">表單連結:</span>
-                        <a id="formLink" href="#" target="_blank" class="value">表單連結</a>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <p> <span id="currentYear"></span> 表單整合系統 | 如有問題請聯繫系統管理員</p>
-        </footer>
+        <div class="bg-decor"></div>
+        <div class="bg-decor-bottom"></div>
+        <h2><i class="fas fa-graduation-cap"></i>會考落點分析邀請碼系統</h2>
+        <p>請選擇您的區域以獲取對應連結，快速查詢落點分析結果！</p>
+        <select id="regionSelect">
+            <option value="">-- 選擇區域 --</option>
+        </select>
+        <button onclick="getLink()"><i class="fas fa-link"></i>獲取連結</button>
+        <p id="result"></p>
+        <div class="footer">Powered by xAI Grok | 2025</div>
     </div>
 
-    <!-- Modal for instructions -->
-    <div id="instructionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <div class="instructions-container">
-                <h2 class="instructions-title">使用說明</h2>
-                <div class="instructions-content">
-                    <div class="step">
-                        <span class="step-number">1</span>
-                        <p>從下方的下拉選單中選擇您所在的區域</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">2</span>
-                        <p>系統將顯示對應區域的表單連結</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">3</span>
-                        <p>點擊表單連結，前往填寫會考落點分析表單</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">4</span>
-                        <p>在表單中輸入您的基本資料及會考成績</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">5</span>
-                        <p>提交表單後，系統將分析您的會考成績與落點</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">6</span>
-                        <p>您將收到包含分析結果的回覆，可用於選校參考</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">7</span>
-                        <p>如有問題或需要更多協助，請聯繫您區域的輔導老師</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        // 替換為您的 Google Apps Script Web 應用程式 URL
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxQ4z33c4CcXwU5uweM_YvAg0LmqqMA2FsSYXsFeLBxV2EIE0jB3J85Lb7Ffdw4LtX0/exec";
+        let regionsData = {};
 
-    <script src="script.js"></script>
+        // 顯示載入動畫
+        function showLoading() {
+            document.getElementById("loadingOverlay").classList.remove("hidden");
+        }
+
+        // 隱藏載入動畫
+        function hideLoading() {
+            document.getElementById("loadingOverlay").classList.add("hidden");
+        }
+
+        // 頁面載入時從後端獲取地區資料
+        window.onload = function() {
+            showLoading(); // 顯示載入動畫
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    regionsData = data.links;
+                    const regionSelect = document.getElementById("regionSelect");
+                    data.regions.forEach(region => {
+                        const option = document.createElement("option");
+                        option.value = region;
+                        option.text = region;
+                        regionSelect.appendChild(option);
+                    });
+                    hideLoading(); // 資料載入完成後隱藏動畫
+                })
+                .catch(error => {
+                    console.error("載入區域資料失敗:", error);
+                    hideLoading(); // 失敗時也隱藏動畫
+                    alert("載入資料失敗，請稍後再試！");
+                });
+        };
+
+        // 獲取連結並顯示
+        function getLink() {
+            showLoading(); // 點擊時顯示載入動畫
+            const region = document.getElementById("regionSelect").value;
+            const result = document.getElementById("result");
+            if (region && regionsData[region]) {
+                result.innerHTML = `您的連結：<a href="${regionsData[region]}" target="_blank">${regionsData[region]}</a>`;
+            } else {
+                result.innerHTML = "請選擇一個區域！";
+            }
+            setTimeout(hideLoading, 500); // 模擬短暫延遲後隱藏動畫
+        }
+    </script>
 </body>
 </html>
